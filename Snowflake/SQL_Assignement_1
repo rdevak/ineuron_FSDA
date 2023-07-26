@@ -1,0 +1,67 @@
+use warehouse sql_new;
+use database sql;
+
+create or replace table sales_data_final
+(
+order_id string,
+order_date date,
+ship_date date,	
+ship_mode string,	
+customer_name	varchar2(100),
+segment varchar(100),
+state	varchar(100),
+country	varchar(100),
+market varchar(100),
+region varchar(100),
+product_id	varchar2(100),
+category	varchar2(100),
+sub_category	varchar2(100),
+product_name	varchar2(200),
+sales string,
+quantity string,
+discount string,
+profit string,
+shipping_cost string,
+order_priority	varchar(20),
+year number(10,0)
+);
+
+describe table sales_data_final;
+select * from sales_data_final;
+
+alter table sales_data_final 
+add primary key(order_id);
+select substring(order_id,9) as new_order_id from sales_data_final;
+
+select discount,
+case 
+when  discount > 0 then 'yes'
+else 'false'
+end discount_new
+from sales_data_final;
+
+alter table sales_data_final
+add column process_time_1 number(10,0);
+
+alter table sales_data_final
+modify process_time_1 int;
+
+select  datediff(day,order_date,ship_date) as process_time_1 from sales_data_final;
+
+update sales_data_final
+set process_time_1 = datediff(day,order_date,ship_date);
+
+  
+alter table sales_data_final
+add column rating number(10,1);
+
+update sales_data_final
+set rating = (
+case 
+when process_time_1 <= 3 then 5
+when process_time_1 > 3 and process_time_1 <= 6 then 4
+when process_time_1 > 6 and process_time_1 <=10 then 3
+else 2
+end );
+
+select * from sales_data_final;
